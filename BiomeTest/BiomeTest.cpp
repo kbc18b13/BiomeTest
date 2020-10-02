@@ -2,21 +2,19 @@
 #include "Bitmap.h"
 
 int main(){
-	Perlin& perlin = Perlin::GetInstance();
+	std::random_device randev;
+	Perlin& perlin = Perlin::GetInstance(randev());
 	Bitmap bmp;
+
+	Bitmap bmp2;
 
 	const uint32_t width = 500;
 
 	bmp.Init( width, width );
+	bmp2.Init( width, width );
 
 	while( true ){
-
-		std::random_device randDevice;
-		uint32_t seedX = randDevice() % 101;
-		uint32_t seedZ = randDevice() % 101;
-
-		uint32_t seedX2 = seedX + 50 % 101;
-		uint32_t seedZ2 = seedZ + 50 % 101;
+		std::cout << "シード:" << perlin.GetSeed() << "\n";
 
 		float relief;
 
@@ -30,24 +28,21 @@ int main(){
 		for( int i = 0; i < width; i++ ){
 			for( int j = 0; j < width; j++ ){
 				auto& c = bmp.At( i, j );
+				auto& c2 = bmp2.At( i, j );
 
-				float noise = perlin.PerlinNoise( ( i + seedX ) / relief, 0, ( j + seedZ ) / relief );
-				//float noise2 = perlin.PerlinNoise( ( i + seedX2 ) / relief, 0, ( j + seedZ2 ) / relief );
+				float noise = perlin.PerlinNoise( i / relief, 0, j / relief );
 
 				c.SetAll( noise * 255 );
 
-				/*if( noise > 0.501f ){
-					if( noise2 > 0.5f ){
-						c.SetF( 0, 1, 0 );
-					} else{
-						c.SetF( 0.7f, 0.3f, 0 );
-					}
+				if( noise > 0.5f ){
+					c2.SetF( 0, 1, 0 );
 				} else{
-					c.SetF( 0, 0, 1 );
-				}*/
+					c2.SetF( 0, 0, 1 );
+				}
 			}
 		}
+		perlin.SetSeed( randev() );
 		bmp.WriteFile( ".\\file.bmp" );
-
+		bmp2.WriteFile( ".\\file2.bmp" );
 	}
 }

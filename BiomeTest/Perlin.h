@@ -1,11 +1,14 @@
 #pragma once
-#include <vector>
-
-static const  int listSize = 256;
 
 class Perlin
 {
 public:
+    static Perlin& GetInstance(int seed){
+        static Perlin instance;
+        instance.m_seed = seed;
+        return instance;
+    }
+
     static Perlin&  GetInstance()
     {
         static Perlin instance;
@@ -14,42 +17,42 @@ public:
 private:
     Perlin();
     ~Perlin() {}
-  
+
 public:
+    void SetSeed( int seed ){
+        m_seed = seed;
+    }
+    
+    int GetSeed(){
+       return m_seed;
+    }
+
     float PerlinNoise(float x, float y, float z);
     float OctavePerlin(float x, float y, float z, int octaves, float persistence);
-    void SetRepeat(int repeat)
-    {
-        m_repeat = repeat;
-    }
 private:
     float Fade(float t)
     {
         return t * t * t * (t * (t * 6 - 15) + 10);
     }
-    int Inc(int num)
-    {
-        num++;
-        if (m_repeat > 0)
-        {
-            num %= m_repeat;
-        }
-        return num;
+
+    unsigned xorshift32( unsigned v ){
+        v = v ^ ( v << 13 );
+        v = v ^ ( v >> 17 );
+        v = v ^ ( v << 15 );
+        return v;
     }
+
+    int Hash( float x, float y, float z);
+
     float Grad(int hash, float x, float y, float z);
     float Lerp(float a, float b, float x)
     {
         return a + x * (b - a);
     }
 
-public:
-    //0`255‚Ü‚Å‚Ì’·‚³256‚Ì”z—ñ
-    static const int m_permutation[];
 private:
+    int m_seed = 0;
     int m_repeat = -1;
-    std::vector<int> m_p;
-  
- 
 };
 
 static inline Perlin& GetPerlin()
