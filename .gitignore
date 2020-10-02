@@ -1,0 +1,15 @@
+.vs/
+x64/
+/BiomeTest/Debug/
+/BiomeTest/Release/
+/Debug/
+/Release/
+*.cmo
+*.dds
+*.obj
+*.cso
+*.user
+*.log
+*.tlog
+*.pdb
+*.ini
