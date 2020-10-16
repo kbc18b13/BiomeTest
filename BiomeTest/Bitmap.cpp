@@ -37,6 +37,11 @@ inline void Write(std::ofstream& ofs , T& v){
 	ofs.write( reinterpret_cast<char*>( &v ), sizeof( T ) );
 }
 
+template<class T>
+inline void Read( std::ifstream& ifs, T& v ){
+	ifs.read( reinterpret_cast<char*>( &v ), sizeof( T ) );
+}
+
 void Bitmap::WriteFile( const char* filePath ){
 	std::ofstream ofs(filePath, std::ios::out | std::ios::binary);
 
@@ -83,4 +88,44 @@ void Bitmap::WriteFile( const char* filePath ){
 	}
 
 	ofs.close();
+}
+
+void Bitmap::LoadFile( const char* filePath ){
+	std::ifstream ifs( filePath, std::ios::in | std::ios::binary );
+
+	if( !ifs ){
+		abort();
+	}
+
+	BitmapHeader header;
+
+	Read(ifs, header );
+
+	BitmapInfoHeader info;
+
+	Read( ifs, info );
+
+	m_width = info.biWidth;
+	m_height = info.biHeight;
+
+	m_image.resize( m_width * m_height );
+
+	//•‚Ìbyte”‚ğ4‚Ì”{”‚É‚»‚ë‚¦‚é
+	int stride = ( m_width * 3 + 3 ) / 4 * 4;
+	int sub_stride = stride - m_width * 3;
+
+	for( int y = 0; y < m_height; y++ ){
+		for( int x = 0; x < m_width; x++ ){
+
+			BitColor& color = m_image[y * m_width + x];
+
+			ifs.read( reinterpret_cast<char*>( &color ), 3 );
+		}
+
+		char pad[2]{};
+
+		ifs.read( pad, sub_stride );
+	}
+	
+	ifs.close();
 }

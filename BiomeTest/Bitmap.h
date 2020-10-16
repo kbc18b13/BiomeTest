@@ -26,9 +26,19 @@ public:
 
 	void WriteFile( const char* filePath );
 
+	void LoadFile( const char* filePath );
+
 	BitColor& At( uint32_t x, uint32_t y ){
 		int _y = m_height - y - 1;
 		return m_image[x + _y * m_width];
+	}
+
+	uint32_t GetWidth() const{
+		return m_width;
+	}
+
+	uint32_t GetHeight() const{
+		return m_height;
 	}
 
 private:

@@ -1,6 +1,11 @@
 ﻿#include "Perlin.h"
 #include "Bitmap.h"
 
+struct test{
+	int x;
+	int y;
+};
+
 int main(){
 	Perlin& perlin = Perlin::GetInstance();
 	Bitmap bmp;
@@ -9,9 +14,9 @@ int main(){
 
 	bmp.Init( width, width );
 
-	while( true ){
+	std::random_device randDevice;
 
-		std::random_device randDevice;
+	while( true ){
 		uint32_t seedX = randDevice() % 101;
 		uint32_t seedZ = randDevice() % 101;
 
@@ -31,23 +36,26 @@ int main(){
 			for( int j = 0; j < width; j++ ){
 				auto& c = bmp.At( i, j );
 
-				float noise = perlin.PerlinNoise( ( i + seedX ) / relief, 0, ( j + seedZ ) / relief );
-				//float noise2 = perlin.PerlinNoise( ( i + seedX2 ) / relief, 0, ( j + seedZ2 ) / relief );
+				int x = i;
+				int z = j;
 
-				c.SetAll( noise * 255 );
+				float noise = perlin.OctavePerlin( x / relief + seedX, 0, z / relief + seedZ, 3, 0.3f);
 
-				/*if( noise > 0.501f ){
-					if( noise2 > 0.5f ){
-						c.SetF( 0, 1, 0 );
-					} else{
-						c.SetF( 0.7f, 0.3f, 0 );
-					}
+				/*if( noise > 0.5f ){
+					if( noise2 > 0.5f )
+						c.SetF( 1, 0, 0 );
+					else
+						c.SetF( 1, 1, 0 );
 				} else{
-					c.SetF( 0, 0, 1 );
+					if( noise2 > 0.5f )
+						c.SetF( 0, 1, 0 );
+					else
+						c.SetF( 0, 0, 1 );
 				}*/
+
+				c.SetAll(noise * 256);
 			}
 		}
 		bmp.WriteFile( ".\\file.bmp" );
-
 	}
 }
