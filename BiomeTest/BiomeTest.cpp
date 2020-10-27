@@ -36,12 +36,13 @@ int main(){
 			for( int j = 0; j < width; j++ ){
 				auto& c = bmp.At( i, j );
 
-				int x = i;
-				int z = j;
+				int x = i - width/2;
+				int z = j - width/2;
 
-				float noise = perlin.OctavePerlin( x / relief + seedX, 0, z / relief + seedZ, 3, 0.3f);
+				float noise = perlin.PerlinNoise( x / relief + seedX, 0, z / relief + seedZ);
+				float noise2 = perlin.PerlinNoise( x / relief + seedX2, 0, z / relief + seedZ2 );
 
-				/*if( noise > 0.5f ){
+				if( noise > 0.5f ){
 					if( noise2 > 0.5f )
 						c.SetF( 1, 0, 0 );
 					else
@@ -51,9 +52,9 @@ int main(){
 						c.SetF( 0, 1, 0 );
 					else
 						c.SetF( 0, 0, 1 );
-				}*/
+				}
 
-				c.SetAll(noise * 256);
+				//c.SetAll(noise * 256);
 			}
 		}
 		bmp.WriteFile( ".\\file.bmp" );
